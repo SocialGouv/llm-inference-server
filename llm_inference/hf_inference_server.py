@@ -1,11 +1,12 @@
 import asyncio
 import os
-from typing import List, Optional
 
 import torch
 from fastapi import FastAPI
-from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from llm_inference.generated_text_response import GeneratedTextResponse
+from llm_inference.prompt_request import PromptRequest
 
 app = FastAPI()
 
@@ -25,23 +26,8 @@ tokenizer.pad_token = tokenizer.eos_token
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME, torch_dtype=torch.float16, token=hf_token
 )
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = next(model.parameters()).device
 model.to(device)
-
-
-# Define the request and response models
-class PromptRequest(BaseModel):
-    prompts: List[str]
-    max_length: Optional[int] = 128
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    top_k: Optional[int] = None
-    num_return_sequences: Optional[int] = 1
-    do_sample: Optional[bool] = False
-
-
-class GeneratedTextResponse(BaseModel):
-    generated_texts: List[str]
 
 
 @app.post("/generate", response_model=GeneratedTextResponse)
