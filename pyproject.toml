@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "ray-llm-inference"
+name = "llm-inference"
 version = "0.1.0"
 description = ""
-authors = ["Victor DEGLIAME <victor.degliame@gmail.com>"]
+authors = ["Victor DEGLIAME <victor.degliame@sg.social.gouv.fr>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
