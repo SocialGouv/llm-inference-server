@@ -1,0 +1,17 @@
+.envrc
+models
+
+# Python specific
+*.pyc
+*.pyo
+__pycache__/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+.coverage*
+*.info
+coverage.json
+diff_amendments.csv
+grouped_matching.csv
