@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 # Define the server URL
@@ -21,7 +23,9 @@ payload = {
 
 
 # Send the POST request to the server
-response = requests.post(URL, json=payload, timeout=180)
+start_time = time.time()
+response = requests.post(URL, json=payload, timeout=5 * 60)
+end_time = time.time()
 
 # Check if the request was successful
 if response.status_code == 200:
@@ -33,3 +37,7 @@ if response.status_code == 200:
 else:
     print(f"Failed to get a response. Status code: {response.status_code}")
     print(f"Response content: {response.text}")
+    print(f"Response content: {response.text}")
+
+response_time = end_time - start_time
+print(f"Response time: {response_time} seconds")
