@@ -16,9 +16,6 @@ prompts = [
 # Create the payload for the request
 payload = {
     "prompts": prompts,
-    "max_length": 64,
-    "num_return_sequences": 1,
-    "do_sample": False,
 }
 
 
