@@ -44,13 +44,24 @@ python scripts/example_batch_request.py
 docker build -t llm-inference-server .
 ```
 
+### Run the S3 inference server
+
 ```bash
 docker run -d \
-    -e HUGGING_FACE_TOKEN=${HUGGING_FACE_TOKEN} \
     -e S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID} \
     -e S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
     -e S3_ENDPOINT_URL=${S3_ENDPOINT_URL} \
-    -v my_docker_volume:/app/models \
+    -e INFERENCE_SERVER=llm_inference.s3_inference_server \
+    -p 8000:8000 \
+    llm-inference-server
+```
+
+### Run the HuggingFace inference server
+
+```bash
+docker run -d \
+    -e HUGGING_FACE_TOKEN=${HUGGING_FACE_TOKEN} \
+    -e INFERENCE_SERVER=llm_inference.hf_inference_server \
     -p 8000:8000 \
     llm-inference-server
 ```
