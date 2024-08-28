@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VENV="/opt/poetry-venv" \
     POETRY_CACHE_DIR="/opt/.cache" \
-    PYTHONPATH="/app:$PYTHONPATH"
+    PYTHONPATH="/app"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -34,11 +34,14 @@ RUN poetry config virtualenvs.create false \
 COPY llm_inference /app/llm_inference
 COPY scripts /app/scripts
 
-# Create a volume for the models
-VOLUME /app/models
-
 # Expose port 8000 to the host
 EXPOSE 8000
 
+# Define a build-time argument with a default value
+ARG INFERENCE_SERVER=llm_inference.s3_inference_server
+
+# Set an environment variable using the argument
+ENV INFERENCE_SERVER=${INFERENCE_SERVER}
+
 # Run the application
-CMD ["poetry", "run", "python", "-m", "llm_inference.s3_inference_server"]
+CMD ["sh", "-c", "poetry run python -m ${INFERENCE_SERVER}"]
