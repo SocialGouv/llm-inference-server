@@ -3,7 +3,7 @@ import os
 import boto3
 import torch
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import pipeline
 
 
 class S3ModelHandler:
@@ -22,8 +22,7 @@ class S3ModelHandler:
         self.s3_endpoint_url = s3_endpoint_url
         self.s3_secret_access_key = s3_secret_access_key
         self.s3_access_key_id = s3_access_key_id
-        self.model = None
-        self.tokenizer = None
+        self.text_generator = None
 
     def download_model_from_s3(self):
         print(
@@ -89,14 +88,16 @@ class S3ModelHandler:
         print("Loading model...")
 
         model_name_or_path = self.local_model_dir
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name_or_path, padding_side="left"
-        )
-        self.tokenizer.pad_token = self.tokenizer.eos_token
-
         # Initialize the model with model parallelism
         device_map = "auto"  # Automatically split across available GPUs
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, torch_dtype=torch.float16, device_map=device_map
+        self.text_generator = pipeline(
+            "text-generation",
+            model=model_name_or_path,
+            tokenizer=model_name_or_path,
+            torch_dtype=torch.bfloat16
+            if torch.backends.mps.is_available()
+            else torch.float16,
+            device_map=device_map,
+            return_full_text=False,
         )
         print("Model loaded successfully!")

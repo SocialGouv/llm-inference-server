@@ -41,31 +41,24 @@ except OSError:
     model_handler.download_model_from_s3()
     model_handler.load_model()
 
-device = next(model_handler.model.parameters()).device
-
 
 @app.post("/generate", response_model=GeneratedTextResponse)
 async def generate_text(request: PromptRequest):
-    inputs = model_handler.tokenizer(
-        request.prompts, return_tensors="pt", padding=True
-    ).to(device)
-
     with torch.no_grad():
-        outputs = await asyncio.to_thread(
-            model_handler.model.generate,
-            **inputs,
-            max_length=request.max_length,
-            temperature=request.temperature,
-            top_p=request.top_p,
-            top_k=request.top_k,
-            num_return_sequences=request.num_return_sequences,
+        generated_texts = await asyncio.to_thread(
+            model_handler.text_generator,
+            request.prompts,
             do_sample=request.do_sample,
+            max_new_tokens=request.max_new_tokens,
+            num_return_sequences=request.num_return_sequences,
+            temperature=request.temperature,
+            top_k=request.top_k,
+            top_p=request.top_p,
         )
 
-    generated_texts = [
-        model_handler.tokenizer.decode(output, skip_special_tokens=True)
-        for output in outputs
-    ]
+    # Extract the generated text from the pipeline output
+    generated_texts = [result[0]["generated_text"] for result in generated_texts]
+
     return GeneratedTextResponse(generated_texts=generated_texts)
 
 
