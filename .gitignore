@@ -15,3 +15,5 @@ build/
 coverage.json
 diff_amendments.csv
 grouped_matching.csv
+test.sh
+.env

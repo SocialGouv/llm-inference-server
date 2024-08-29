@@ -13,7 +13,7 @@ app = FastAPI()
 
 # S3 configuration
 BUCKET_NAME = "vllm-cache"
-S3_MODEL_PATH = "Meta-Llama-3.1-8B"
+S3_MODEL_PATH = os.getenv("S3_MODEL_PATH")
 local_model_dir = f"models/{S3_MODEL_PATH}"
 s3_access_key_id = os.getenv("S3_ACCESS_KEY_ID")
 s3_secret_access_key = os.getenv("S3_SECRET_ACCESS_KEY")

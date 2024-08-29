@@ -1,0 +1,14 @@
+services:
+  llm-inference-server:
+    build:
+      context: .
+      dockerfile: dockerfile
+    env_file:
+      - .env
+    volumes:
+      - my_docker_volume:/app/models
+    ports:
+      - "8000:8000"
+
+volumes:
+  my_docker_volume:

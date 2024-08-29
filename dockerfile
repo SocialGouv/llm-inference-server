@@ -25,18 +25,25 @@ WORKDIR /app
 # Copy only requirements
 COPY pyproject.toml poetry.lock* /app/
 
-# Install project dependencies
+# Install project dependencies (including dev dependencies)
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev --no-interaction --no-ansi \
+    && poetry install --no-interaction --no-ansi \
     && rm -rf ${POETRY_CACHE_DIR}
 
 # Start a new stage for a smaller final image
 FROM python:3.11-slim-buster
 
-# Copy installed packages and application code from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Copy the entire Python environment and application code from builder
+COPY --from=builder /usr/local /usr/local
 COPY --from=builder /app /app
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VENV="/opt/poetry-venv" \
+    POETRY_CACHE_DIR="/opt/.cache" \
+    PYTHONPATH="/app" \
+    PATH="${PATH}:/opt/poetry/bin"
 
 # Set working directory
 WORKDIR /app
@@ -54,5 +61,5 @@ ARG INFERENCE_SERVER=llm_inference.s3_inference_server
 # Set an environment variable using the argument
 ENV INFERENCE_SERVER=${INFERENCE_SERVER}
 
-# Run the application
-CMD ["sh", "-c", "poetry run python -m ${INFERENCE_SERVER}"]
+# Run the application directly with Python (without Poetry)
+CMD python -m ${INFERENCE_SERVER}
