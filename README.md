@@ -38,6 +38,18 @@ python llm_inference/s3_inference_server.py
 python scripts/example_batch_request.py
 ```
 
+### cURL
+
+```bash
+curl -X POST http://localhost:8000/generate \
+-H "Content-Type: application/json" \
+-d '{"prompts": ["Once upon a time in a faraway land", "A journey of a thousand miles begins with"]}'
+```
+
+```json
+{"generated_texts":[", there lived a young girl named Alice. She was a curious and adventurous soul, always eager to explore the world around her. One day, while playing in her garden, Alice stumbled upon a strange looking key. Curious about its purpose, she picked it up and examined it closely. To her surprise, the key"," a single step. - Lao Tzu\nThe first step in the journey of a thousand miles is to take a step. The first step in the journey of a thousand miles is to take a step. The first step in the journey of a thousand miles is to take a step. The first step in the journey"]}
+```
+
 ## Docker
 
 ```bash
